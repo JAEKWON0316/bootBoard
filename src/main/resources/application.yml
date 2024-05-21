@@ -1,0 +1,21 @@
+#서버포트 설정
+server:
+  port: 8081
+
+#db연동설정
+spring:
+  datasource: 
+     driver-class-name: com.mysql.cj.jdbc.Driver
+     url: jdbc:mysql://localhost:3306/spboot?serverTimezone=Asia/Seoul&characterEncoding=utf-8
+     username: root
+     password: diwo0206^
+  thymeleaf: 
+     cache: false #베포시는 true 또는 thymeleaf설정을 하지 않으면 기본값 true가 됨
+
+  #jpa 설정 (이걸로 db를 쓴다!!.)
+  jpa: 
+    database-platform: org.hibernate.dialect.MySQLDialect #mysql8에서는 버전명쓰지 않음
+    open-in-view: false
+    show-sql: true
+    hibernate: 
+      ddl-auto: update #none(엔티티변경해도 db는 변경하지 않음) update(변경된 부분만 적용) validate(변경사항검사) create(서버시작시 drop하고 새로 시작) 
