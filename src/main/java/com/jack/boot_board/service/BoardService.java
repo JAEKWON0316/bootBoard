@@ -2,8 +2,10 @@ package com.jack.boot_board.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.jack.boot_board.dto.BoardDto;
 import com.jack.boot_board.entity.BoardEntity;
@@ -33,5 +35,27 @@ public class BoardService {
             bDtos.add(BoardDto.toBoardDto(bEntity));
         }
         return bDtos;
+    }
+
+    /*게시글 조회수 증가 */
+    @Transactional
+    public void updateHits(Long id) {
+        boardRepository.updateHits(id);
+    }
+
+
+    /* 게시물 보기 */
+    public BoardDto findById(Long id){
+        // Optional 값이 있을 수도 있고 없을 수도 있는 타입.
+        Optional<BoardEntity> optionalBoardEntity = boardRepository.findById(id);
+        if(optionalBoardEntity.isPresent()){    //isPresent로 안에 내용을 boolean 타입으로 반환해준다.     
+            
+            BoardEntity boardEntity = optionalBoardEntity.get();   //값이 있으면 entity(컬럼)에 값을 담아
+            BoardDto boardDto = BoardDto.toBoardDto(boardEntity); //그다음 dto를 뽑는다.
+            return boardDto;  
+        }
+        else{
+            return null;
+        }
     }
 }
