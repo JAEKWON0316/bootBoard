@@ -36,6 +36,7 @@ public class BoardEntity extends TimesEntity {    //spring-boot에서는 entity�
     private int hits;
 
     public static BoardEntity toBoardEntity(BoardDto bDto){
+        
         BoardEntity bEntity = new BoardEntity();
 
         bEntity.setBwriter(bDto.getBwriter());
@@ -45,6 +46,20 @@ public class BoardEntity extends TimesEntity {    //spring-boot에서는 entity�
         bEntity.setHits(0);
 
         //날짜는 db에서 저절로 생성되기 때문에 안해줘도 된다.
+
+        return bEntity;
+    }
+
+    public static BoardEntity toUpdateEntity(BoardDto bDto){
+    
+        BoardEntity bEntity = new BoardEntity();
+
+        bEntity.setId(bDto.getId());
+        bEntity.setBwriter(bDto.getBwriter());
+        bEntity.setPass(bDto.getPass());
+        bEntity.setTitle(bDto.getTitle());
+        bEntity.setContents(bDto.getContents());
+        bEntity.setHits(bDto.getHits());
 
         return bEntity;
     }

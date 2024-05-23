@@ -14,8 +14,4 @@ public interface BoardRepository extends JpaRepository<BoardEntity, Long>{  //�
     @Query(value = "update BoardEntity b set b.hits=b.hits+1 where b.id=:id")// update bboard set hits=hits+1 where id = ? 와 똑같다.  
     void updateHits(@Param("id") Long id);
 
-    /* 업데이트 */
-    @Modifying
-    @Query(value = "update BoardEntity b set b.updated_time=:bbsUpdatedTime , b.title = ':title' , b.contents = ':contents' where b.id=:id")
-    void update(@Param("id") Long id);
 }   

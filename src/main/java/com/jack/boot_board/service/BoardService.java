@@ -58,4 +58,19 @@ public class BoardService {
             return null;
         }
     }
+
+    /* 게시물 수정 */
+    public BoardDto update(BoardDto bDto){
+        /* 
+        Optional<BoardEntity> exEntity = boardRepository.findById(bDto.getId());
+        if(exEntity.isPresent()){
+            BoardEntity bEntity = exEntity.get();
+            bEntity.setTitle(bDto.getTitle());
+            bEntity.setContents(bDto.getContents());
+        }
+        */
+        BoardEntity boardEntity = BoardEntity.toUpdateEntity(bDto);
+        boardRepository.save(boardEntity);
+        return findById(bDto.getId());
+    }
 }

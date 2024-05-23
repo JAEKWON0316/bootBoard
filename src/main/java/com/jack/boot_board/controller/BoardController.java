@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.jack.boot_board.dto.BoardDto;
 import com.jack.boot_board.service.BoardService;
@@ -67,12 +69,51 @@ public class BoardController {
     }
     
     @PostMapping("/update")
-    public String update(@ModelAttribute BoardDto bDto, Model model){
+    public String update(@ModelAttribute BoardDto bDto, Model model, RedirectAttributes redirectAttributes){  //getter에서 쓴 내용이 model에서 담겨져 온다 , redirectAttribute는 ruturn을 redirect로 할 때 쓴다!
+        //비밀번호 검증을 위해 bDto에서 받을 비번과 boardDto에 담겨있는 비번을 비교한다.
+        BoardDto boardDto = bService.findById(bDto.getId());
+        if(boardDto.getPass().equals(bDto.getPass())){
+            //수정로직 처리
+            BoardDto board = bService.update(bDto);
+            model.addAttribute("board", board);
 
-        List<BoardDto> bDtoList = bService.findAll();
-        model.addAttribute("lists", bDtoList);
+            return "detail";
+        }
+        else{
+            redirectAttributes.addFlashAttribute("error", "비밀번호가 일치하지 않습니다.");  //update에서 error라는 네임으로 안의 벨류를 쓸 수 있다.
+            return "redirect:/board/update/" + bDto.getId();
+        }
+        
+    }
 
-        return "history.go(-1)";
+    @GetMapping("/delete/{id}")
+    public String deleteForm(@PathVariable("id") Long id, Model model){ //파라미터창으로 들어오는 id값과 model을 받는다
+       
+        
+        model.addAttribute("id", id);
+
+        return "deleteForm";
+    }
+
+    @PostMapping("/delete")
+    public String delete(@RequestParam("id") Long id, @RequestParam("pass") String pass, Model model, RedirectAttributes redirectAttributes){
+
+        //1 pass에 값이 있는지?
+        if(pass == null || pass.isEmpty()){
+            redirectAttributes.addFlashAttribute("error", "비밀번호가 일치하지 않습니다."); //이거는 에러출력로직
+            return "redirect:delete/" + id;
+        }
+
+        //2. id와 pass가 db와 같은지?
+        BoardDto boardDto = bService.findById(id); //boardDto에 id값을 넣어준다.
+        if(boardDto != null && boardDto.getPass().equals(pass)){
+            //성공로직(게시물삭제)
+            return "redirect:list";
+        }
+        else{
+            redirectAttributes.addFlashAttribute("error", "비밀번호가 틀렸습니다.."); 
+            return "redirect:delete/" + id;
+        }
     }
 
 }
