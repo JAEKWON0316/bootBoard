@@ -39,5 +39,11 @@ public class BoardDto {
 
         return bDto;
     }
-
+    public BoardDto(Long id, String bwriter, int hits, String title, LocalDateTime bbsCreatedTime){
+        this.id = id;
+        this.bwriter = bwriter;
+        this.hits = hits;
+        this.title = title;
+        this.bbsCreatedTime = bbsCreatedTime;
+    }
 }

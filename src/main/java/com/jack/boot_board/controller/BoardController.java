@@ -2,6 +2,9 @@ package com.jack.boot_board.controller;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,13 +29,28 @@ public class BoardController {
     
     private final BoardService bService;
 
-     @GetMapping("/")
+    @GetMapping("/")
     public String getList(Model model) {
         System.out.println("list");
         List<BoardDto> bDtoList = bService.findAll();
         model.addAttribute("lists", bDtoList);
         return "list";
     }
+
+    // /board/paging?page=1
+    @GetMapping("/paging")
+        public String paging(@PageableDefault(page = 1) Pageable pageable, Model model){
+            Page<BoardDto> boardList = bService.paging(pageable);
+            int blockLimit = 10; //한 페이지에 보여질 페이징 수
+            //1, 4, 7, 10, ...
+            int startPage = (((int) (Math.ceil((double)pageable.getPageNumber() / blockLimit))) - 1) * blockLimit + 1;
+            int endPage = ((startPage + blockLimit - 1) < boardList.getTotalPages())? startPage + blockLimit - 1 : boardList.getTotalPages();
+            model.addAttribute("boardList", boardList); //model에 담아서 페이지를 넘겨준다(boradList에 boardList를 담아서 보내준다.)
+            model.addAttribute("startPage", startPage);
+            model.addAttribute("endPage", endPage);
+            return "paging";
+        }
+    
 
     @GetMapping("/{id}")
     public String detailView(@PathVariable("id") Long id, Model model) {
@@ -108,7 +126,8 @@ public class BoardController {
         BoardDto boardDto = bService.findById(id); //boardDto에 id값을 넣어준다.
         if(boardDto != null && boardDto.getPass().equals(pass)){
             //성공로직(게시물삭제)
-            return "redirect:list";
+            bService.delete(id);
+            return "redirect:/board/";
         }
         else{
             redirectAttributes.addFlashAttribute("error", "비밀번호가 틀렸습니다.."); 
